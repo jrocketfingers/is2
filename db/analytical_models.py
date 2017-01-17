@@ -1,8 +1,10 @@
 from peewee import *
 from peewee import create_model_tables
 
+from db.base import AnalyticsModel
 
-class Time(Model):
+
+class Time(AnalyticsModel):
     date = DateField()
     time = TimeField()
 
@@ -12,7 +14,7 @@ class Time(Model):
         )
 
 
-class Article(Model):
+class Article(AnalyticsModel):
     type = CharField(max_length=255)
     color = CharField(max_length=255)
     size = CharField(max_length=255)
@@ -25,7 +27,7 @@ class Article(Model):
         )
 
 
-class Customer(Model):
+class Customer(AnalyticsModel):
     gender = CharField(max_length=1)
     age = SmallIntegerField()
 
@@ -35,7 +37,7 @@ class Customer(Model):
         )
 
 
-class Seller(Model):
+class Seller(AnalyticsModel):
     district = CharField(max_length=255)
     city = CharField(max_length=255)
 
@@ -45,7 +47,7 @@ class Seller(Model):
         )
 
 
-class OfferGroup(Model):
+class OfferGroup(AnalyticsModel):
     number_of = IntegerField()
 
     time = ForeignKeyField(Time)
@@ -53,7 +55,7 @@ class OfferGroup(Model):
     article = ForeignKeyField(Article)
 
 
-class OrderGroup(Model):
+class OrderGroup(AnalyticsModel):
     number_of = IntegerField()
     total_value = DecimalField(decimal_places=2)
 
@@ -64,10 +66,7 @@ class OrderGroup(Model):
 
 
 def main():
-    db = SqliteDatabase('analytics.db')
-    db.connect()
-    db.create_tables([Time, Article, Customer, Seller, OfferGroup, OrderGroup])
-    db.close()
+    create_model_tables([Time, Article, Customer, Seller, OfferGroup, OrderGroup])
 
 
 if __name__ == "__main__":

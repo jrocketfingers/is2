@@ -3,43 +3,48 @@ import datetime
 from peewee import *
 from peewee import create_model_tables
 
+from db.base import OperationalModel
 
-class Type(Model):
+
+db = SqliteDatabase('operational.db')
+
+
+class Type(OperationalModel):
     name = CharField(max_length=255)
 
 
-class Size(Model):
+class Size(OperationalModel):
     name = CharField(max_length=255)
 
 
-class Color(Model):
+class Color(OperationalModel):
     name = CharField(max_length=255)
 
 
-class Article(Model):
+class Article(OperationalModel):
     name = CharField(max_length=255)
     type = ForeignKeyField(Type)
     size = ForeignKeyField(Size)
     color = ForeignKeyField(Color)
 
 
-class Customer(Model):
+class Customer(OperationalModel):
     JMBG = CharField(max_length=13, primary_key=True)
     name = CharField(max_length=255)
     gender = CharField(max_length=1)
     age = SmallIntegerField()
 
 
-class City(Model):
+class City(OperationalModel):
     name = CharField(max_length=255)
 
 
-class District(Model):
+class District(OperationalModel):
     name = CharField(max_length=255)
     city = ForeignKeyField(City)
 
 
-class Seller(Model):
+class Seller(OperationalModel):
     PIB = CharField(max_length=9, primary_key=True)
     name = CharField(max_length=255)
     street = CharField(max_length=255)
@@ -47,14 +52,14 @@ class Seller(Model):
     district = ForeignKeyField(District)
 
 
-class Offer(Model):
+class Offer(OperationalModel):
     article = ForeignKeyField(Article)
     seller = ForeignKeyField(Seller)
     price = DecimalField(decimal_places=2)
     created_at = DateTimeField(default=datetime.datetime.now)
 
 
-class Order(Model):
+class Order(OperationalModel):
     OrderStatus = (
         ('CR', 'created',),
         ('RE', 'realized',),
@@ -66,7 +71,7 @@ class Order(Model):
     status = CharField(max_length=1, choices=OrderStatus)
 
 
-class OfferOrder(Model):
+class OfferOrder(OperationalModel):
     offer = ForeignKeyField(Offer)
     order = ForeignKeyField(Order)
     amount = IntegerField()
@@ -76,10 +81,7 @@ class OfferOrder(Model):
 
 
 def main():
-    db = SqliteDatabase('operational.db')
-    db.connect()
-    db.create_tables([Type, Color, Size, Article, Customer, City, District, Seller, Offer, Order, OfferOrder])
-    db.close()
+    create_model_tables([Type, Color, Size, Article, Customer, City, District, Seller, Offer, Order, OfferOrder])
 
 
 if __name__ == "__main__":
