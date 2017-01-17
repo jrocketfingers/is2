@@ -1,3 +1,8 @@
 .python-version
 .idea/workspace.xml
 .idea/tasks.xml
+
+**/__pycache__
+
+analytics.db
+operational.db
