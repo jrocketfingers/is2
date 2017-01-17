@@ -83,6 +83,24 @@ class OfferOrder(OperationalModel):
 def main():
     create_model_tables([Type, Color, Size, Article, Customer, City, District, Seller, Offer, Order, OfferOrder])
 
+    Type(name="Pants").save()
+    Type(name="Shirt").save()
+    Type(name="Dress").save()
+    Type(name="Jacket").save()
+    Type(name="Suit").save()
+
+    Color(name="Red").save()
+    Color(name="Green").save()
+    Color(name="Yellow").save()
+    Color(name="Blue").save()
+
+    Size(name="XXS").save()
+    Size(name="S").save()
+    Size(name="M").save()
+    Size(name="L").save()
+    Size(name="XL").save()
+    Size(name="XXL").save()
+
 
 if __name__ == "__main__":
     main()
