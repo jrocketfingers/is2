@@ -93,7 +93,7 @@ class Offer(OperationalModel):
     created_at = DateTimeField(default=datetime.datetime.now)
 
     def __repr__(self):
-        return "<Offer: {article} - {seller} @ {price}, {created_at}>".format(article=self.article,
+        return "<Offer: {article} - {seller} @ {price} RSD, {created_at}>".format(article=self.article,
                                                                               seller=self.seller,
                                                                               price=self.price,
                                                                               created_at=self.created_at)
@@ -112,7 +112,7 @@ class Order(OperationalModel):
 
     def __repr__(self):
         return "<Order: {customer} {offer} - {created_at}; {status}".format(customer=self.customer,
-                                                                            offer=self.join.offer,
+                                                                            offer=self.join.get().offer,
                                                                             status=self.status,
                                                                             created_at=self.created_at)
 

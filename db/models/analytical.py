@@ -15,6 +15,7 @@ class Time(AnalyticsModel):
 
 
 class Article(AnalyticsModel):
+    name = CharField(max_length=255)
     type = CharField(max_length=255)
     color = CharField(max_length=255)
     size = CharField(max_length=255)
