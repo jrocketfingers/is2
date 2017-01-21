@@ -22,31 +22,21 @@ class Article(AnalyticsModel):
     lowest_price = DecimalField()
     highest_price = DecimalField()
 
-    # class Meta:
-    #    indexes = (
-    #        (('type', 'color', 'size',), False),
-    #    )
-
 
 class Customer(AnalyticsModel):
+    JMBG = CharField(max_length=13, primary_key=True)
     name = CharField(max_length=255)
     gender = CharField(max_length=1)
     age = SmallIntegerField()
 
-    class Meta:
-        indexes = (
-            (('gender', 'age', 'name'), True),
-        )
-
 
 class Seller(AnalyticsModel):
+    PIB = CharField(max_length=9, primary_key=True)
+    name = CharField(max_length=255)
+    street = CharField(max_length=255)
+    number = CharField(max_length=10)
     district = CharField(max_length=255)
     city = CharField(max_length=255)
-
-    class Meta:
-        indexes = (
-            (('district', 'city',), True),
-        )
 
 
 class OfferGroup(AnalyticsModel):

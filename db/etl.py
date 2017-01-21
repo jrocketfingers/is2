@@ -8,6 +8,9 @@ def transform_orders_to_analytic_orders():
     # Create a typed list of possible aliases
     class Aliases:
         customer_name = 'customer_name'
+        seller_name = 'seller_name'
+        seller_street = 'seller_street'
+        seller_number = 'seller_number'
         article_name = 'article_name'
         total_value = 'total_value'
         number_of = 'number_of'
@@ -23,9 +26,14 @@ def transform_orders_to_analytic_orders():
 
     query = operational.Order.select(fn.SUM(operational.Offer.price).alias(Aliases.total_value),
                                      fn.COUNT(operational.Order.id).alias(Aliases.number_of),
+                                     operational.Customer.JMBG,
                                      operational.Customer.name.alias(Aliases.customer_name),
                                      operational.Customer.age,
                                      operational.Customer.gender,
+                                     operational.Seller.PIB,
+                                     operational.Seller.name.alias(Aliases.seller_name),
+                                     operational.Seller.street.alias(Aliases.seller_street),
+                                     operational.Seller.number.alias(Aliases.seller_number),
                                      operational.District.name.alias(Aliases.district),
                                      operational.City.name.alias(Aliases.city),
                                      operational.Article.name.alias(Aliases.article_name),
@@ -46,9 +54,14 @@ def transform_orders_to_analytic_orders():
         .join(operational.Type, on=(operational.Type.id == operational.Article.type_id))\
         .join(operational.Color, on=(operational.Color.id == operational.Article.color_id))\
         .join(operational.Size, on=(operational.Size.id == operational.Article.size_id))\
-        .group_by(operational.Customer.name,
-                  operational.Customer.age,
+        .group_by(operational.Customer.JMBG,
+                  operational.Customer.name,
                   operational.Customer.gender,
+                  operational.Customer.age,
+                  operational.Seller.PIB,
+                  operational.Seller.name,
+                  operational.Seller.street,
+                  operational.Seller.number,
                   operational.District.name,
                   operational.City.name,
                   operational.Article.name,
@@ -77,6 +90,7 @@ def transform_orders_to_analytic_orders():
             order['article'] = article
 
             customer_data = {
+                'JMBG': order.pop('JMBG'),
                 'name': order.pop(Aliases.customer_name),
                 'age': order.pop('age'),
                 'gender': order.pop('gender')
@@ -85,6 +99,10 @@ def transform_orders_to_analytic_orders():
             order['customer'] = customer
 
             seller_data = {
+                'PIB': order.pop('PIB'),
+                'name': order.pop(Aliases.seller_name),
+                'street': order.pop(Aliases.seller_street),
+                'number': order.pop(Aliases.seller_number),
                 'city': order.pop(Aliases.city),
                 'district': order.pop(Aliases.district)
             }
@@ -101,3 +119,17 @@ def transform_orders_to_analytic_orders():
             analytical.OrderGroup.create(**order)
 
         page += 1
+
+
+def transform_orders_to_analytic_orders():
+    query = operational.Offer.select(fn.COUNT(operational.Offer.id),
+                                     operational.Seller.PIB,
+                                     operational.Seller.name,
+                                     operational.Seller.street,
+                                     operational.Seller.number,
+                                     operational.District.name,
+                                     operational.City.name,
+                                     operational.Article.name,
+                                     operational.Type.name,
+                                     operational.Color.name,
+                                     operational.Size.name)
