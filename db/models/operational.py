@@ -108,7 +108,7 @@ class Order(OperationalModel):
 
     customer = ForeignKeyField(Customer)
     created_at = DateTimeField(default=datetime.datetime.now)
-    status = CharField(max_length=1, choices=OrderStatus)
+    status = CharField(max_length=2, choices=OrderStatus)
 
     def __repr__(self):
         return "<Order: {customer} {offer} - {created_at}; {status}".format(customer=self.customer,

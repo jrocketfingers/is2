@@ -1,0 +1,68 @@
+<Schema name="internetprodaja">
+  <Dimension type="TimeDimension" visible="true" highCardinality="false" name="Time">
+    <Hierarchy name="Times" visible="true" hasAll="true">
+      <Table name="time">
+      </Table>
+      <Level name="date" visible="true" column="date" type="Date" uniqueMembers="false" levelType="TimeDays" hideMemberIf="Never">
+      </Level>
+      <Level name="hour" visible="true" column="hour" type="Integer" uniqueMembers="false" levelType="TimeHours" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Article">
+    <Hierarchy name="Articles" visible="true" hasAll="true" primaryKey="id">
+      <Table name="article">
+      </Table>
+      <Level name="type" visible="true" column="type" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="size" visible="true" column="size" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="color" visible="true" column="color" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Seller">
+    <Hierarchy name="Sellers" visible="true" hasAll="true" primaryKey="id">
+      <Table name="seller">
+      </Table>
+      <Level name="district" visible="true" column="district" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="city" visible="true" column="city" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Customer">
+    <Hierarchy name="Customers By Gender" visible="true" hasAll="true" primaryKey="id">
+      <Table name="customer">
+      </Table>
+      <Level name="gender" visible="true" column="gender" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="age" visible="true" column="age" type="Integer" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="name" visible="true" column="name" type="String" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="Customers By Name" visible="true" hasAll="true" primaryKey="id">
+      <Table name="customer" alias="">
+      </Table>
+      <Level name="name" visible="true" column="name" type="String" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="Orders" visible="true" cache="true" enabled="true">
+    <Table name="ordergroup">
+    </Table>
+    <DimensionUsage source="Time" name="Time" visible="true" foreignKey="time_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Article" name="Article" visible="true" foreignKey="article_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Customer" name="Customer" visible="true" foreignKey="customer_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Seller" name="Seller" visible="true" foreignKey="seller_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Total Value" column="total_value" datatype="Numeric" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="Number Of" column="number_of" datatype="Integer" aggregator="sum" visible="true">
+    </Measure>
+  </Cube>
+</Schema>

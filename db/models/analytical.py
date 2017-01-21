@@ -6,11 +6,11 @@ from db.base import AnalyticsModel
 
 class Time(AnalyticsModel):
     date = DateField()
-    time = TimeField()
+    hour = IntegerField()
 
     class Meta:
         indexes = (
-            (('date', 'time',), True),
+            (('date', 'hour',), True),
         )
 
 
@@ -22,19 +22,20 @@ class Article(AnalyticsModel):
     lowest_price = DecimalField()
     highest_price = DecimalField()
 
-    class Meta:
-        indexes = (
-            (('type', 'color', 'size',), True),
-        )
+    # class Meta:
+    #    indexes = (
+    #        (('type', 'color', 'size',), False),
+    #    )
 
 
 class Customer(AnalyticsModel):
+    name = CharField(max_length=255)
     gender = CharField(max_length=1)
     age = SmallIntegerField()
 
     class Meta:
         indexes = (
-            (('gender', 'age',), True),
+            (('gender', 'age', 'name'), True),
         )
 
 
