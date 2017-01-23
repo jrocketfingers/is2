@@ -493,7 +493,7 @@
   <order>
     <hop>
       <from>Offers</from>
-      <to>Table output</to>
+      <to>Insert &#x2f; Update</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -509,7 +509,7 @@
       <schema_name/>
     </partitioning>
     <connection>Operational DB</connection>
-    <sql>SELECT &#xa;	COUNT&#x28;&#x60;t1&#x60;.&#x60;id&#x60;&#x29; AS number_of,&#xa;	&#x60;t1&#x60;.&#x60;price&#x60;,&#xa;	&#x28;SELECT analytics.article.id&#xa;	 FROM analytics.article&#xa;	 WHERE&#xa;		&#x60;t3&#x60;.&#x60;name&#x60; &#x3d; analytics.article.name AND&#xa;		&#x60;t9&#x60;.&#x60;name&#x60; &#x3d; analytics.article.type AND&#xa;		&#x60;t6&#x60;.&#x60;name&#x60; &#x3d; analytics.article.color AND&#xa;		&#x60;t7&#x60;.&#x60;name&#x60; &#x3d; analytics.article.size&#x29; AS &#x27;article_id&#x27;,&#xa;	&#x60;t4&#x60;.&#x60;PIB&#x60;,&#xa;	CURDATE&#x28;&#x29; AS date&#xa;FROM &#x60;offer&#x60; AS t1&#xa;	INNER JOIN &#xa;		&#x28;SELECT&#xa;			&#x60;t12&#x60;.&#x60;PIB&#x60; AS seller_id,&#xa;			&#x60;t11&#x60;.&#x60;id&#x60; AS article_id,&#xa;			MAX&#x28;&#x60;t10&#x60;.&#x60;created_at&#x60;&#x29; AS created_at&#xa;		 FROM &#x60;offer&#x60; AS t10&#xa;			INNER JOIN &#x60;article&#x60; AS t11 ON &#x28;&#x60;t10&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t11&#x60;.&#x60;id&#x60;&#x29;&#xa;			INNER JOIN &#x60;seller&#x60; AS t12 ON &#x28;&#x60;t12&#x60;.&#x60;PIB&#x60; &#x3d; &#x60;t10&#x60;.&#x60;seller_id&#x60;&#x29;&#xa;		 GROUP BY &#x60;t12&#x60;.&#x60;PIB&#x60;, &#x60;t11&#x60;.&#x60;id&#x60;&#x29; AS last_offer_date&#xa;	ON &#x28;&#x28;&#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;article_id&#x60;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;seller_id&#x60;&#x29;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;created_at&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;created_at&#x60;&#x29;&#x29;&#xa;	INNER JOIN &#x60;article&#x60; AS t3 ON &#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t3&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;type&#x60; AS t9 ON &#x28;&#x60;t3&#x60;.&#x60;type_id&#x60; &#x3d; &#x60;t9&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;color&#x60; AS t6 ON &#x28;&#x60;t3&#x60;.&#x60;color_id&#x60; &#x3d; &#x60;t6&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;size&#x60; AS t7 ON &#x28;&#x60;t3&#x60;.&#x60;size_id&#x60; &#x3d; &#x60;t7&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;seller&#x60; AS t4 ON &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;t4&#x60;.&#x60;PIB&#x60;&#x29;&#xa;	INNER JOIN &#x60;district&#x60; AS t5 ON &#x28;&#x60;t4&#x60;.&#x60;district_id&#x60; &#x3d; &#x60;t5&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;city&#x60; AS t8 ON &#x28;&#x60;t5&#x60;.&#x60;city_id&#x60; &#x3d; &#x60;t8&#x60;.&#x60;id&#x60;&#x29;&#xa;GROUP BY&#xa;	&#x60;t1&#x60;.&#x60;price&#x60;, &#xa;	&#x60;t3&#x60;.&#x60;id&#x60;,&#xa;	&#x60;t4&#x60;.&#x60;PIB&#x60;</sql>
+    <sql>SELECT &#xa;	COUNT&#x28;&#x60;t1&#x60;.&#x60;id&#x60;&#x29; AS number_of,&#xa;	&#x28;SELECT analytics.article.id&#xa;	 FROM analytics.article&#xa;	 WHERE&#xa;		&#x60;t3&#x60;.&#x60;name&#x60; &#x3d; analytics.article.name AND&#xa;		&#x60;t9&#x60;.&#x60;name&#x60; &#x3d; analytics.article.type AND&#xa;		&#x60;t6&#x60;.&#x60;name&#x60; &#x3d; analytics.article.color AND&#xa;		&#x60;t7&#x60;.&#x60;name&#x60; &#x3d; analytics.article.size&#x29; AS &#x27;article_id&#x27;,&#xa;	&#x28;SELECT analytics.price.id&#xa;	 FROM analytics.price&#xa;	 WHERE&#xa;		&#x60;t1&#x60;.&#x60;price&#x60; &#x3d; analytics.price.value&#x29; AS &#x27;price_id&#x27;,&#xa;	&#x60;t4&#x60;.&#x60;PIB&#x60; AS &#x27;seller_id&#x27;,&#xa;	&#x28;SELECT analytics.offertime.id&#xa;	 FROM analytics.offertime&#xa;	 WHERE&#xa;		analytics.offertime.date &#x3d; CURDATE&#x28;&#x29;&#x29; AS &#x27;time_id&#x27;&#xa;FROM &#x60;offer&#x60; AS t1&#xa;	INNER JOIN &#xa;		&#x28;SELECT&#xa;			&#x60;t12&#x60;.&#x60;PIB&#x60; AS seller_id,&#xa;			&#x60;t11&#x60;.&#x60;id&#x60; AS article_id,&#xa;			MAX&#x28;&#x60;t10&#x60;.&#x60;created_at&#x60;&#x29; AS created_at&#xa;		 FROM &#x60;offer&#x60; AS t10&#xa;			INNER JOIN &#x60;article&#x60; AS t11 ON &#x28;&#x60;t10&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t11&#x60;.&#x60;id&#x60;&#x29;&#xa;			INNER JOIN &#x60;seller&#x60; AS t12 ON &#x28;&#x60;t12&#x60;.&#x60;PIB&#x60; &#x3d; &#x60;t10&#x60;.&#x60;seller_id&#x60;&#x29;&#xa;		 GROUP BY &#x60;t12&#x60;.&#x60;PIB&#x60;, &#x60;t11&#x60;.&#x60;id&#x60;&#x29; AS last_offer_date&#xa;	ON &#x28;&#x28;&#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;article_id&#x60;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;seller_id&#x60;&#x29;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;created_at&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;created_at&#x60;&#x29;&#x29;&#xa;	INNER JOIN &#x60;article&#x60; AS t3 ON &#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t3&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;type&#x60; AS t9 ON &#x28;&#x60;t3&#x60;.&#x60;type_id&#x60; &#x3d; &#x60;t9&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;color&#x60; AS t6 ON &#x28;&#x60;t3&#x60;.&#x60;color_id&#x60; &#x3d; &#x60;t6&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;size&#x60; AS t7 ON &#x28;&#x60;t3&#x60;.&#x60;size_id&#x60; &#x3d; &#x60;t7&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;seller&#x60; AS t4 ON &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;t4&#x60;.&#x60;PIB&#x60;&#x29;&#xa;	INNER JOIN &#x60;district&#x60; AS t5 ON &#x28;&#x60;t4&#x60;.&#x60;district_id&#x60; &#x3d; &#x60;t5&#x60;.&#x60;id&#x60;&#x29;&#xa;	INNER JOIN &#x60;city&#x60; AS t8 ON &#x28;&#x60;t5&#x60;.&#x60;city_id&#x60; &#x3d; &#x60;t8&#x60;.&#x60;id&#x60;&#x29;&#xa;GROUP BY&#xa;	&#x60;t1&#x60;.&#x60;price&#x60;, &#xa;	&#x60;t3&#x60;.&#x60;id&#x60;,&#xa;	&#x60;t4&#x60;.&#x60;PIB&#x60;</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -530,8 +530,8 @@
     </step>
 
   <step>
-    <name>Table output</name>
-    <type>TableOutput</type>
+    <name>Insert &#x2f; Update</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -541,24 +541,67 @@
       <schema_name/>
     </partitioning>
     <connection>Analytics DB</connection>
-    <schema/>
-    <table>offerfact</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-    </fields>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema/>
+      <table>offerfact</table>
+      <key>
+        <name>number_of</name>
+        <field>number_of</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>article_id</name>
+        <field>article_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>price_id</name>
+        <field>price_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>seller_id</name>
+        <field>seller_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>time_id</name>
+        <field>time_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>number_of</name>
+        <rename>number_of</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>article_id</name>
+        <rename>article_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>price_id</name>
+        <rename>price_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>seller_id</name>
+        <rename>seller_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>time_id</name>
+        <rename>time_id</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
     <cluster_schema/>
     <remotesteps>
       <input>

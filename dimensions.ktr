@@ -12,9 +12,9 @@
     </parameters>
     <log>
       <trans-log-table>
-        <connection/>
+        <connection>Analytics DB</connection>
         <schema/>
-        <table/>
+        <table>ettl_transformation_log_dimension</table>
         <size_limit_lines/>
         <interval/>
         <timeout_days/>
@@ -526,6 +526,11 @@
       <to>OfferTime</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>Offers Pass</from>
+      <to>Prices</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <step>
     <name>Articles</name>
@@ -662,6 +667,135 @@
     </step>
 
   <step>
+    <name>OfferTime</name>
+    <type>InsertUpdate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>Analytics DB</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema/>
+      <table>offertime</table>
+      <key>
+        <name>date</name>
+        <field>date</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>date</name>
+        <rename>date</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>368</xloc>
+      <yloc>464</yloc>
+      <draw>Y</draw>
+    </GUI>
+    </step>
+
+  <step>
+    <name>Offers Pass</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>Operational DB</connection>
+    <sql>SELECT COUNT&#x28;&#x60;t1&#x60;.&#x60;id&#x60;&#x29; AS number_of, &#x60;t1&#x60;.&#x60;price&#x60;, &#x60;t3&#x60;.&#x60;name&#x60; AS article_name, &#x60;t9&#x60;.&#x60;name&#x60; AS type, &#x60;t6&#x60;.&#x60;name&#x60; AS color, &#x60;t7&#x60;.&#x60;name&#x60; AS size, &#x60;t4&#x60;.&#x60;PIB&#x60;, &#x60;t4&#x60;.&#x60;name&#x60; AS seller_name, &#x60;t4&#x60;.&#x60;street&#x60; AS seller_street, &#x60;t4&#x60;.&#x60;number&#x60; AS seller_number, &#x60;t5&#x60;.&#x60;name&#x60; AS district, &#x60;t8&#x60;.&#x60;name&#x60; AS city, CURDATE&#x28;&#x29; AS date FROM &#x60;offer&#x60; AS t1 INNER JOIN &#x28;SELECT &#x60;t12&#x60;.&#x60;PIB&#x60; AS seller_id, &#x60;t11&#x60;.&#x60;id&#x60; AS article_id, MAX&#x28;&#x60;t10&#x60;.&#x60;created_at&#x60;&#x29; AS created_at FROM &#x60;offer&#x60; AS t10 INNER JOIN &#x60;article&#x60; AS t11 ON &#x28;&#x60;t10&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t11&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;seller&#x60; AS t12 ON &#x28;&#x60;t12&#x60;.&#x60;PIB&#x60; &#x3d; &#x60;t10&#x60;.&#x60;seller_id&#x60;&#x29; GROUP BY &#x60;t12&#x60;.&#x60;PIB&#x60;, &#x60;t11&#x60;.&#x60;id&#x60;&#x29; AS last_offer_date ON &#x28;&#x28;&#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;article_id&#x60;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;seller_id&#x60;&#x29;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;created_at&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;created_at&#x60;&#x29;&#x29; INNER JOIN &#x60;article&#x60; AS t3 ON &#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t3&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;type&#x60; AS t9 ON &#x28;&#x60;t3&#x60;.&#x60;type_id&#x60; &#x3d; &#x60;t9&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;color&#x60; AS t6 ON &#x28;&#x60;t3&#x60;.&#x60;color_id&#x60; &#x3d; &#x60;t6&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;size&#x60; AS t7 ON &#x28;&#x60;t3&#x60;.&#x60;size_id&#x60; &#x3d; &#x60;t7&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;seller&#x60; AS t4 ON &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;t4&#x60;.&#x60;PIB&#x60;&#x29; INNER JOIN &#x60;district&#x60; AS t5 ON &#x28;&#x60;t4&#x60;.&#x60;district_id&#x60; &#x3d; &#x60;t5&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;city&#x60; AS t8 ON &#x28;&#x60;t5&#x60;.&#x60;city_id&#x60; &#x3d; &#x60;t8&#x60;.&#x60;id&#x60;&#x29; GROUP BY &#x60;t1&#x60;.&#x60;price&#x60;, &#x60;t3&#x60;.&#x60;id&#x60;, &#x60;t4&#x60;.&#x60;PIB&#x60;</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>464</yloc>
+      <draw>Y</draw>
+    </GUI>
+    </step>
+
+  <step>
+    <name>OrderTime</name>
+    <type>InsertUpdate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>Analytics DB</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema/>
+      <table>ordertime</table>
+      <key>
+        <name>date</name>
+        <field>date</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>hour</name>
+        <field>hour</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>date</name>
+        <rename>date</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>hour</name>
+        <rename>hour</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>368</xloc>
+      <yloc>80</yloc>
+      <draw>Y</draw>
+    </GUI>
+    </step>
+
+  <step>
     <name>Orders Pass</name>
     <type>TableInput</type>
     <description/>
@@ -689,6 +823,49 @@
     <GUI>
       <xloc>144</xloc>
       <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+    </step>
+
+  <step>
+    <name>Prices</name>
+    <type>InsertUpdate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>Analytics DB</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema/>
+      <table>price</table>
+      <key>
+        <name>price</name>
+        <field>value</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>value</name>
+        <rename>price</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>368</xloc>
+      <yloc>576</yloc>
       <draw>Y</draw>
     </GUI>
     </step>
@@ -787,135 +964,6 @@
     <GUI>
       <xloc>368</xloc>
       <yloc>368</yloc>
-      <draw>Y</draw>
-    </GUI>
-    </step>
-
-  <step>
-    <name>OrderTime</name>
-    <type>InsertUpdate</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>Analytics DB</connection>
-    <commit>100</commit>
-    <update_bypassed>N</update_bypassed>
-    <lookup>
-      <schema/>
-      <table>ordertime</table>
-      <key>
-        <name>date</name>
-        <field>date</field>
-        <condition>&#x3d;</condition>
-        <name2/>
-      </key>
-      <key>
-        <name>hour</name>
-        <field>hour</field>
-        <condition>&#x3d;</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>date</name>
-        <rename>date</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>hour</name>
-        <rename>hour</rename>
-        <update>Y</update>
-      </value>
-    </lookup>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>368</xloc>
-      <yloc>80</yloc>
-      <draw>Y</draw>
-    </GUI>
-    </step>
-
-  <step>
-    <name>Offers Pass</name>
-    <type>TableInput</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>Operational DB</connection>
-    <sql>SELECT COUNT&#x28;&#x60;t1&#x60;.&#x60;id&#x60;&#x29; AS number_of, &#x60;t1&#x60;.&#x60;price&#x60;, &#x60;t3&#x60;.&#x60;name&#x60; AS article_name, &#x60;t9&#x60;.&#x60;name&#x60; AS type, &#x60;t6&#x60;.&#x60;name&#x60; AS color, &#x60;t7&#x60;.&#x60;name&#x60; AS size, &#x60;t4&#x60;.&#x60;PIB&#x60;, &#x60;t4&#x60;.&#x60;name&#x60; AS seller_name, &#x60;t4&#x60;.&#x60;street&#x60; AS seller_street, &#x60;t4&#x60;.&#x60;number&#x60; AS seller_number, &#x60;t5&#x60;.&#x60;name&#x60; AS district, &#x60;t8&#x60;.&#x60;name&#x60; AS city, CURDATE&#x28;&#x29; AS date FROM &#x60;offer&#x60; AS t1 INNER JOIN &#x28;SELECT &#x60;t12&#x60;.&#x60;PIB&#x60; AS seller_id, &#x60;t11&#x60;.&#x60;id&#x60; AS article_id, MAX&#x28;&#x60;t10&#x60;.&#x60;created_at&#x60;&#x29; AS created_at FROM &#x60;offer&#x60; AS t10 INNER JOIN &#x60;article&#x60; AS t11 ON &#x28;&#x60;t10&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t11&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;seller&#x60; AS t12 ON &#x28;&#x60;t12&#x60;.&#x60;PIB&#x60; &#x3d; &#x60;t10&#x60;.&#x60;seller_id&#x60;&#x29; GROUP BY &#x60;t12&#x60;.&#x60;PIB&#x60;, &#x60;t11&#x60;.&#x60;id&#x60;&#x29; AS last_offer_date ON &#x28;&#x28;&#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;article_id&#x60;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;seller_id&#x60;&#x29;&#x29; AND &#x28;&#x60;t1&#x60;.&#x60;created_at&#x60; &#x3d; &#x60;last_offer_date&#x60;.&#x60;created_at&#x60;&#x29;&#x29; INNER JOIN &#x60;article&#x60; AS t3 ON &#x28;&#x60;t1&#x60;.&#x60;article_id&#x60; &#x3d; &#x60;t3&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;type&#x60; AS t9 ON &#x28;&#x60;t3&#x60;.&#x60;type_id&#x60; &#x3d; &#x60;t9&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;color&#x60; AS t6 ON &#x28;&#x60;t3&#x60;.&#x60;color_id&#x60; &#x3d; &#x60;t6&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;size&#x60; AS t7 ON &#x28;&#x60;t3&#x60;.&#x60;size_id&#x60; &#x3d; &#x60;t7&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;seller&#x60; AS t4 ON &#x28;&#x60;t1&#x60;.&#x60;seller_id&#x60; &#x3d; &#x60;t4&#x60;.&#x60;PIB&#x60;&#x29; INNER JOIN &#x60;district&#x60; AS t5 ON &#x28;&#x60;t4&#x60;.&#x60;district_id&#x60; &#x3d; &#x60;t5&#x60;.&#x60;id&#x60;&#x29; INNER JOIN &#x60;city&#x60; AS t8 ON &#x28;&#x60;t5&#x60;.&#x60;city_id&#x60; &#x3d; &#x60;t8&#x60;.&#x60;id&#x60;&#x29; GROUP BY &#x60;t1&#x60;.&#x60;price&#x60;, &#x60;t3&#x60;.&#x60;id&#x60;, &#x60;t4&#x60;.&#x60;PIB&#x60;</sql>
-    <limit>0</limit>
-    <lookup/>
-    <execute_each_row>N</execute_each_row>
-    <variables_active>N</variables_active>
-    <lazy_conversion_active>N</lazy_conversion_active>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>144</xloc>
-      <yloc>368</yloc>
-      <draw>Y</draw>
-    </GUI>
-    </step>
-
-  <step>
-    <name>OfferTime</name>
-    <type>InsertUpdate</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>Analytics DB</connection>
-    <commit>100</commit>
-    <update_bypassed>N</update_bypassed>
-    <lookup>
-      <schema/>
-      <table>offertime</table>
-      <key>
-        <name>date</name>
-        <field>date</field>
-        <condition>&#x3d;</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>date</name>
-        <rename>date</rename>
-        <update>Y</update>
-      </value>
-    </lookup>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>368</xloc>
-      <yloc>464</yloc>
       <draw>Y</draw>
     </GUI>
     </step>

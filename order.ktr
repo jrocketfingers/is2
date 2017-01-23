@@ -12,9 +12,9 @@
     </parameters>
     <log>
       <trans-log-table>
-        <connection/>
+        <connection>Analytics DB</connection>
         <schema/>
-        <table/>
+        <table>ettl_transformation_log_orders</table>
         <size_limit_lines/>
         <interval/>
         <timeout_days/>
@@ -514,7 +514,7 @@
   <order>
     <hop>
       <from>Order Fact Input</from>
-      <to>Output Orders</to>
+      <to>Insert &#x2f; Update</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -551,8 +551,8 @@
     </step>
 
   <step>
-    <name>Output Orders</name>
-    <type>TableOutput</type>
+    <name>Insert &#x2f; Update</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -562,48 +562,78 @@
       <schema_name/>
     </partitioning>
     <connection>Analytics DB</connection>
-    <schema/>
-    <table>orderfact</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-        <field>
-          <column_name>total_value</column_name>
-          <stream_name>total_value</stream_name>
-        </field>
-        <field>
-          <column_name>number_of</column_name>
-          <stream_name>number_of</stream_name>
-        </field>
-        <field>
-          <column_name>customer_id</column_name>
-          <stream_name>customer_id</stream_name>
-        </field>
-        <field>
-          <column_name>seller_id</column_name>
-          <stream_name>seller_id</stream_name>
-        </field>
-        <field>
-          <column_name>article_id</column_name>
-          <stream_name>article_id</stream_name>
-        </field>
-        <field>
-          <column_name>time_id</column_name>
-          <stream_name>time_id</stream_name>
-        </field>
-    </fields>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema/>
+      <table>orderfact</table>
+      <key>
+        <name>total_value</name>
+        <field>total_value</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>number_of</name>
+        <field>number_of</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>customer_id</name>
+        <field>customer_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>seller_id</name>
+        <field>seller_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>article_id</name>
+        <field>article_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>time_id</name>
+        <field>time_id</field>
+        <condition>&#x3d;</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>total_value</name>
+        <rename>total_value</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>number_of</name>
+        <rename>number_of</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>customer_id</name>
+        <rename>customer_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>seller_id</name>
+        <rename>seller_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>article_id</name>
+        <rename>article_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>time_id</name>
+        <rename>time_id</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -612,7 +642,7 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>368</xloc>
+      <xloc>384</xloc>
       <yloc>384</yloc>
       <draw>Y</draw>
     </GUI>

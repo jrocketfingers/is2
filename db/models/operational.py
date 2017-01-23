@@ -112,7 +112,7 @@ class Order(OperationalModel):
 
     def __repr__(self):
         return "<Order: {customer} {offer} - {created_at}; {status}".format(customer=self.customer,
-                                                                            offer=self.join.get().offer,
+                                                                            offer=self.offer_order.get().offer,
                                                                             status=self.status,
                                                                             created_at=self.created_at)
 

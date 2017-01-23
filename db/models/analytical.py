@@ -41,12 +41,17 @@ class Seller(AnalyticsModel):
     city = CharField(max_length=255)
 
 
+class Price(AnalyticsModel):
+    value = DecimalField()
+
+
 class OfferFact(AnalyticsModel):
     number_of = IntegerField()
 
     time = ForeignKeyField(OfferTime)
     seller = ForeignKeyField(Seller, to_field=Seller.PIB)
     article = ForeignKeyField(Article)
+    price = ForeignKeyField(Price)
 
 
 class OrderFact(AnalyticsModel):
