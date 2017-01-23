@@ -88,7 +88,7 @@ class Seller(OperationalModel):
 
 class Offer(OperationalModel):
     article = ForeignKeyField(Article)
-    seller = ForeignKeyField(Seller)
+    seller = ForeignKeyField(Seller, to_field=Seller.PIB)
     price = DecimalField(decimal_places=2)
     created_at = DateTimeField(default=datetime.datetime.now)
 
@@ -106,7 +106,7 @@ class Order(OperationalModel):
         ('CN', 'cancelled'),
     )
 
-    customer = ForeignKeyField(Customer)
+    customer = ForeignKeyField(Customer, to_field=Customer.JMBG)
     created_at = DateTimeField(default=datetime.datetime.now)
     status = CharField(max_length=2, choices=OrderStatus)
 
@@ -118,8 +118,8 @@ class Order(OperationalModel):
 
 
 class OfferOrder(OperationalModel):
-    offer = ForeignKeyField(Offer, related_name='join')
-    order = ForeignKeyField(Order, related_name='join')
+    offer = ForeignKeyField(Offer, related_name='offer_order')
+    order = ForeignKeyField(Order, related_name='offer_order')
     amount = IntegerField()
 
     class Meta:

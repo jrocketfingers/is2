@@ -86,7 +86,7 @@ def transform_orders_to_analytic_orders():
                 'date': order.pop(Aliases.date),
                 'hour': order.pop(Aliases.hour)
             }
-            time, created = analytical.Time.get_or_create(**time_data)
+            time, created = analytical.OrderTime.get_or_create(**time_data)
             order['time'] = time
 
             article_data = {
@@ -118,7 +118,7 @@ def transform_orders_to_analytic_orders():
             seller, created = analytical.Seller.get_or_create(**seller_data)
             order['seller'] = seller
 
-            analytical.OrderGroup.create(**order)
+            analytical.OrderFact.create(**order)
 
         page += 1
 
@@ -160,34 +160,42 @@ last_offer_date_query = operational.Offer.select(operational.Seller.PIB.alias('s
     .alias('last_offer_date')
 
 
-current_offers_query = operational.Offer.select(operational.Offer) \
+current_offers_query = operational.Offer.select(fn.COUNT(operational.Offer.id).alias(Aliases.number_of),
+                                                operational.Offer.price,
+                                                operational.Article.name.alias(Aliases.article_name),
+                                                operational.Type.name.alias(Aliases.type),
+                                                operational.Color.name.alias(Aliases.color),
+                                                operational.Size.name.alias(Aliases.size),
+                                                operational.Seller.PIB,
+                                                operational.Seller.name.alias(Aliases.seller_name),
+                                                operational.Seller.street.alias(Aliases.seller_street),
+                                                operational.Seller.number.alias(Aliases.seller_number),
+                                                operational.District.name.alias(Aliases.district),
+                                                operational.City.name.alias(Aliases.city),
+                                                fn.CURDATE().alias('date')) \
     .join(last_offer_date_query, on=((operational.Offer.article_id == last_offer_date_query.c.article_id) &
                                      (operational.Offer.seller_id == last_offer_date_query.c.seller_id) &
                                      (operational.Offer.created_at == last_offer_date_query.c.created_at))) \
-    .alias('current_offers_query')
-
-
-articles_query = operational.Article.select(operational.Article.name,
-                                            operational.Color.name.alias(Aliases.color),
-                                            operational.Size.name.alias(Aliases.size),
-                                            operational.Type.name.alias(Aliases.type),
-                                            fn.MAX(current_offers_query.c.price).alias(Aliases.highest_price),
-                                            fn.MIN(current_offers_query.c.price).alias(Aliases.lowest_price)) \
-    .join(current_offers_query, on=(operational.Article.id == current_offers_query.c.article_id)) \
+    .join(operational.Article, on=(operational.Offer.article_id == operational.Article.id)) \
+    .join(operational.Type, on=(operational.Article.type_id == operational.Type.id)) \
     .join(operational.Color, on=(operational.Article.color_id == operational.Color.id)) \
     .join(operational.Size, on=(operational.Article.size_id == operational.Size.id)) \
-    .join(operational.Type, on=(operational.Article.type_id == operational.Type.id)) \
-    .group_by(operational.Article.id)
+    .join(operational.Seller, on=(operational.Offer.seller_id == operational.Seller.PIB)) \
+    .join(operational.District, on=(operational.Seller.district_id == operational.District.id)) \
+    .join(operational.City, on=(operational.District.city_id == operational.City.id)) \
+    .group_by(operational.Offer.price,
+              operational.Article.id,
+              operational.Seller.PIB)
 
 
 def load_articles():
-    query = articles_query.dicts()
+    query = current_offers_query.dicts()
 
     page = 1
 
     while query.paginate(page, 50).count() > 0:
-        for article_data in query.paginate(page, 50):
-            article = analytical.Article(**article_data)
+        for offer_data in query.paginate(page, 50):
+            article = analytical.OFferGroup(**offer_data)
             article.save()
 
         page += 1

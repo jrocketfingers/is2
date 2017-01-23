@@ -4,7 +4,7 @@ from peewee import create_model_tables
 from db.base import AnalyticsModel
 
 
-class Time(AnalyticsModel):
+class OrderTime(AnalyticsModel):
     date = DateField()
     hour = IntegerField()
 
@@ -14,13 +14,15 @@ class Time(AnalyticsModel):
         )
 
 
+class OfferTime(AnalyticsModel):
+    date = DateField()
+
+
 class Article(AnalyticsModel):
     name = CharField(max_length=255)
     type = CharField(max_length=255)
     color = CharField(max_length=255)
     size = CharField(max_length=255)
-    lowest_price = DecimalField()
-    highest_price = DecimalField()
 
 
 class Customer(AnalyticsModel):
@@ -39,26 +41,26 @@ class Seller(AnalyticsModel):
     city = CharField(max_length=255)
 
 
-class OfferGroup(AnalyticsModel):
+class OfferFact(AnalyticsModel):
     number_of = IntegerField()
 
-    time = ForeignKeyField(Time)
-    seller = ForeignKeyField(Seller)
+    time = ForeignKeyField(OfferTime)
+    seller = ForeignKeyField(Seller, to_field=Seller.PIB)
     article = ForeignKeyField(Article)
 
 
-class OrderGroup(AnalyticsModel):
+class OrderFact(AnalyticsModel):
     number_of = IntegerField()
     total_value = DecimalField(decimal_places=2)
 
-    time = ForeignKeyField(Time)
-    customer = ForeignKeyField(Customer)
-    seller = ForeignKeyField(Seller)
+    time = ForeignKeyField(OrderTime)
+    customer = ForeignKeyField(Customer, to_field=Customer.JMBG)
+    seller = ForeignKeyField(Seller, to_field=Seller.PIB)
     article = ForeignKeyField(Article)
 
 
 def main():
-    create_model_tables([Time, Article, Customer, Seller, OfferGroup, OrderGroup])
+    create_model_tables([OrderTime, OfferTime, Article, Customer, Seller, OfferFact, OrderFact])
 
 
 if __name__ == "__main__":
