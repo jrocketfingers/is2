@@ -1,0 +1,31 @@
+a.
+
+SELECT {[Measures].[Total Value]} ON COLUMNS,
+       {[Article].Children} ON ROWS
+FROM Orders
+
+
+
+b.
+
+SELECT {[Measures].[Total Value]} ON COLUMNS,
+       NON EMPTY {[Seller].[name].Members} ON ROWS
+FROM Orders
+
+
+
+c.
+
+SELECT {[Measures].[Number Of]} ON COLUMNS,
+       filter ([OfferTime].Members, [OfferTime].date.CurrentMember IN {[2017-02-11]:[2017-02-11]}) ON ROWS
+FROM Offers
+
+
+
+d.
+
+WITH MEMBER [Measures].[Max Price] AS
+	MAX([Price].[Price].Members, [Price].[Price].currentmember.memberkey)
+SELECT {[Measures].[Max Price]} ON COLUMNS,
+       {[Article].[name].Members} ON ROWS
+FROM Offers
