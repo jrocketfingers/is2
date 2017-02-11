@@ -12,9 +12,9 @@
     </parameters>
     <log>
       <trans-log-table>
-        <connection>Analytics DB</connection>
+        <connection/>
         <schema/>
-        <table>ettl_transformation_log_dimension</table>
+        <table/>
         <size_limit_lines/>
         <interval/>
         <timeout_days/>

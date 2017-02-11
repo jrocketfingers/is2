@@ -12,9 +12,9 @@
     </parameters>
     <log>
       <trans-log-table>
-        <connection>Analytics DB</connection>
+        <connection/>
         <schema/>
-        <table>ettl_transformation_log_orders</table>
+        <table/>
         <size_limit_lines/>
         <interval/>
         <timeout_days/>
@@ -439,7 +439,7 @@
       <note>BULLSHIT&#xa;I have to refetch&#x2f;merge to get the keys&#x3f;&#xa;Hopefully it&#x27;s at least a bit faster.&#xa;PostgreSQL and RETURNING all the way.&#xa;-----&#xa;The bullshit doesn&#x27;t stop.&#xa;I have to order shit by each key I wanna use merge join with.&#xa;WHAT&#x27;S THE POINT, I MIGHT AS WELL REQUERY.&#xa;-----&#xa;Oh boi. If I requery, I have to do a nested lookup for each one of the analytics entries.&#xa;-----&#xa;GUESS WHAT&#x3a; you can implicitly refer other databases with whatever connection.&#xa;Good to know.</note>
       <xloc>96</xloc>
       <yloc>16</yloc>
-      <width>556</width>
+      <width>661</width>
       <heigth>270</heigth>
       <fontname>Cantarell</fontname>
       <fontsize>11</fontsize>
