@@ -65,7 +65,7 @@ class OrderFact(AnalyticsModel):
 
 
 def main():
-    create_model_tables([OrderTime, OfferTime, Article, Customer, Seller, OfferFact, OrderFact])
+    create_model_tables([OrderTime, OfferTime, Article, Customer, Seller, Price, OfferFact, OrderFact])
 
 
 if __name__ == "__main__":
